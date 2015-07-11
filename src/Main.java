@@ -17,6 +17,7 @@ import javafx.stage.Stage;
  
 public class Main extends Application {   
 	private TextField input;
+	private boolean newCalc;
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Calculator");
@@ -63,20 +64,36 @@ public class Main extends Application {
         	buttons[i].setPadding(new Insets(10, 10, 10, 10));
         	buttons[i].setPrefWidth(90);
         	buttons[i].setPrefHeight(50);
-        
-        	buttons[i].setOnAction(new EventHandler<ActionEvent>(){
-        		public void handle(ActionEvent event){
-        			String e = input.getText();
-        			if (btns[j].equals("-") || 
-        					btns[j].equals("+") ||
-        					btns[j].equals("/") ||
-        					btns[j].equals("*")){
-							input.setText(e+ " " +btns[j] + " ");}
-					else {
-        				input.setText(e+btns[j]);
-					}
-        		}
-        	});
+        	if (!btns[i].equals("=")){
+	        	buttons[i].setOnAction(new EventHandler<ActionEvent>(){
+	        		public void handle(ActionEvent event){
+	        			if (newCalc){
+	        				input.setText("");
+	        				newCalc = false;
+	        			}
+	        			String e = input.getText();
+	        			if (btns[j].equals("-") || 
+	        					btns[j].equals("+") ||
+	        					btns[j].equals("/") ||
+	        					btns[j].equals("*")){
+								input.setText(e+ " " +btns[j] + " ");}
+						else {
+	        				input.setText(e+btns[j]);
+						}
+	        		}
+	        	});
+        	} else {
+        		buttons[i].setOnAction(new EventHandler<ActionEvent>(){
+	        		public void handle(ActionEvent event){
+	        			String e = input.getText();
+	        			input.setText("");
+	        			//System.out.println(e);
+	        			Evaluator eval = new Evaluator(e);
+	        			input.setText(Evaluator.answer());
+	        			newCalc = true;
+	        		}
+	        	});
+        	}
         	pane.getChildren().add(buttons[i]);
         	
         }
