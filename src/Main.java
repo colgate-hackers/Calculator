@@ -10,96 +10,100 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
  
 public class Main extends Application {   
-	private TextField input;
-	private boolean newCalc;
+	protected static TextField input;
+	
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Calculator");
-		FlowPane mainPane = new FlowPane();
-		//a pane holding all nodes
-		FlowPane pane = new FlowPane(10, 10);
-		pane.setPadding(new Insets(10, 10, 10, 10));
-		
-		//Menu bar to hold all menus
-        MenuBar menu = new MenuBar();
-        menu.prefWidthProperty().bind(mainPane.widthProperty());
+        final FlowPane mainPane = new FlowPane();
         
-        Menu mode = new Menu("Mode");
+        //an HBox is a container that adds children to its view horizontally
+        //this HBox will hold the input bar
+        HBox inputContainer = new HBox();
+        inputContainer.prefWidthProperty().bind(mainPane.widthProperty());
+        inputContainer.setPadding(new Insets(10, 10, 10, 10));
         
-        //menus to be placed under mode
-        MenuItem normal = new MenuItem("Normal");
-        MenuItem scientific = new MenuItem("Scientific");
-        MenuItem exit = new MenuItem("Exit");
-        
-        mode.getItems().addAll(normal, scientific, exit);
-        menu.getMenus().add(mode);
-        
-        mainPane.getChildren().add(menu);
-		
-		//input text to store all the 
         input = new TextField();
-        input.prefWidthProperty().bind(pane.widthProperty().subtract(30));
-		input.setPrefHeight(100);
+        
+        //pane holding all the buttons for standard mode
+		final StandardMode stdPane = new StandardMode();
+		//pane holding all the buttons for standard mode
+		final ScientificMode sciPane = new ScientificMode();
+		
+        
+		//Menus
+		MenuBar menuBar = new MenuBar();
+		//set the menu to be the width of the mainPane
+		menuBar.prefWidthProperty().bind(mainPane.widthProperty());
+		Menu mode = new  Menu("Mode");
+		
+		//menu options
+		MenuItem standard = new MenuItem("Standard");
+		MenuItem scientific = new MenuItem("Scientific");
+		MenuItem exit = new MenuItem("Exit");
+		
+		//listener for exit button
+		exit.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent a) {
+				System.exit(0);
+			}
+		});
+		
+		//adds all the menus to mode
+		mode.getItems().addAll(standard, scientific);
+		
+		//adds mode to the menu bar
+		menuBar.getMenus().add(mode);
+		
+		
+		//adds all the children into the mainPane
+        mainPane.getChildren().addAll(menuBar, inputContainer, stdPane);
+        
+        //some set up for the input bar. Some things done in javafx css
+        input.prefWidthProperty().bind(inputContainer.widthProperty());
+        input.setEditable(false);
 		input.setAlignment(Pos.BASELINE_RIGHT);
 		input.setStyle("-fx-font-size: 36px;");
-        
-		//buttons will be held in an array
-        Button [] buttons  = new Button[16];
+		input.setPrefHeight(100);
 		
-		//String array that processes the order of the buttons
-        final String[] btns = {"7", "8", "9", "+", "4", "5", "6", "-", "1", "2", "3", "/", ".", "0", "=", "*"};
+		//add the stylised inputbar to the container
+		inputContainer.getChildren().add(input);
 		
-        pane.getChildren().add(input); 
+		//handle mode changes
+        scientific.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle (ActionEvent a) {
+				try{
+					//the mode change is a simple keypad swap
+					mainPane.getChildren().remove(stdPane);
+					mainPane.getChildren().add(sciPane);
+					input.setText("");
+				} catch (Exception e){
+					//
+				}
+			}
+		});
+        standard.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle (ActionEvent a) {
+				try{
+					mainPane.getChildren().remove(sciPane);
+					mainPane.getChildren().add(stdPane);
+					input.setText("");
+				} catch (Exception e){
+					//
+				}
+			}
+		});
         
-        for (int i =0; i<16; i++){
-        	final int j = i;
-        	buttons[i] = new Button(btns[i]);
-        	buttons[i].setStyle("-fx-font-size: 16px;");
-        	buttons[i].setPadding(new Insets(10, 10, 10, 10));
-        	buttons[i].setPrefWidth(90);
-        	buttons[i].setPrefHeight(50);
-        	if (!btns[i].equals("=")){
-	        	buttons[i].setOnAction(new EventHandler<ActionEvent>(){
-	        		public void handle(ActionEvent event){
-	        			if (newCalc){
-	        				input.setText("");
-	        				newCalc = false;
-	        			}
-	        			String e = input.getText();
-	        			if (btns[j].equals("-") || 
-	        					btns[j].equals("+") ||
-	        					btns[j].equals("/") ||
-	        					btns[j].equals("*")){
-								input.setText(e+ " " +btns[j] + " ");}
-						else {
-	        				input.setText(e+btns[j]);
-						}
-	        		}
-	        	});
-        	} else {
-        		buttons[i].setOnAction(new EventHandler<ActionEvent>(){
-	        		public void handle(ActionEvent event){
-	        			String e = input.getText();
-	        			input.setText("");
-	        			//System.out.println(e);
-	        			Evaluator eval = new Evaluator(e);
-	        			input.setText(Evaluator.answer());
-	        			newCalc = true;
-	        		}
-	        	});
-        	}
-        	pane.getChildren().add(buttons[i]);
-        	
-        }
-        
-        mainPane.getChildren().add(pane);
-        Scene scene = new Scene(mainPane,400, 400);
+        //set up
+        Scene scene = new Scene(mainPane,400, 460);
         primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
         primaryStage.show();
