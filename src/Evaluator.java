@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 public class Evaluator {
 	private Stack<String> valueStack;
 	private Stack<String> operatorStack;
-	private static double answer;
+	private double answer;
 	
 	public Evaluator(String s) {
 		//the two stacks that will store the values and operations
@@ -23,7 +23,7 @@ public class Evaluator {
     {
         //remove white space and add evaluation operator
         expression=expression.replaceAll("[\t\n ]", "")+"=";
-        String operator="*/+-=";
+        String operator="*/+-=()";
         
         //split up the operators from the values
         StringTokenizer tokenizer=new StringTokenizer(expression, operator, true);
@@ -31,6 +31,24 @@ public class Evaluator {
         {
             //add the next token to the proper stack
             String token=tokenizer.nextToken();
+            if (token.equals("(")) {
+            	//take the thing after the parenthesis
+            	token = tokenizer.nextToken();
+            	StringBuilder expr = new StringBuilder();
+            	while (!token.equals(")")) {
+            		System.out.println(token);
+            		expr.append(token);
+            		token=tokenizer.nextToken();
+            		
+            	}
+            	Evaluator n_e = new Evaluator(expr.toString());
+            	String result = n_e.answer();
+            	valueStack.push(result);
+            	
+            	//read off the closing parenthesis
+            	token = tokenizer.nextToken();
+            }
+            
             if(operator.indexOf(token)<0)
                 valueStack.push(token);
             else
@@ -110,7 +128,7 @@ public class Evaluator {
     }
 	
 	
-	public static String answer() {
+	public String answer() {
 		String s = String.valueOf(answer);
 		if (s.endsWith(".0")){
 			return s.substring(0, s.indexOf('.'));

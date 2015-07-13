@@ -28,7 +28,7 @@ public class StandardMode extends FlowPane {
         	buttons[i].setStyle("-fx-font-size: 16px;");
         	buttons[i].setPadding(new Insets(10, 10, 10, 10));
         	buttons[i].setPrefWidth(90);
-        	buttons[i].setPrefHeight(50);
+        	buttons[i].setPrefHeight(55);
         	if (!btns[i].equals("=")){
 	        	buttons[i].setOnAction(new EventHandler<ActionEvent>(){
 	        		public void handle(ActionEvent event){
@@ -87,7 +87,7 @@ public class StandardMode extends FlowPane {
 	        			Main.input.setText("");
 	        			//System.out.println(e);
 	        			Evaluator eval = new Evaluator(e);
-	        			Main.input.setText(Evaluator.answer());
+	        			Main.input.setText(eval.answer());
 	        			newCalc = true;
 	        		}
 	        	});

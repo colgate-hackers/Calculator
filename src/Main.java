@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
@@ -58,7 +59,7 @@ public class Main extends Application {
 		});
 		
 		//adds all the menus to mode
-		mode.getItems().addAll(standard, scientific);
+		mode.getItems().addAll(standard, scientific, new SeparatorMenuItem(), exit);
 		
 		//adds mode to the menu bar
 		menuBar.getMenus().add(mode);
@@ -103,7 +104,7 @@ public class Main extends Application {
 		});
         
         //set up
-        Scene scene = new Scene(mainPane,400, 460);
+        Scene scene = new Scene(mainPane,400, 480);
         primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
         primaryStage.show();
